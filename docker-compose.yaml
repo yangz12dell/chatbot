@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+  web:
+    build: ./web
+    ports:
+      - "5050:5050"
+    depends_on:
+      - elasticsearch
+      - bertserving
+
+  elasticsearch:
+    image: elasticsearch:7.9.1
+    ports:
+      - "9200:9200"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    tty: true
+    environment:
+      discovery.type: single-node
+
+  bertserving:
+    build: ./bertserving
+    ports:
+      - "5555:5555"
+      - "5556:5556"
+    environment:
+      - PATH_MODEL=${PATH_MODEL}
+    volumes:
+      - "${PATH_MODEL}:/model"
+volumes:
+  es-data:
+    driver: local

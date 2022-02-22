@@ -1,0 +1,11 @@
+# Download a pretrained BERT model
+if [ ! -d cased_L-24_H-1024_A-16 ]; then
+  wget https://storage.googleapis.com/bert_models/2018_10_18/cased_L-24_H-1024_A-16.zip
+  unzip cased_L-24_H-1024_A-16.zip
+fi
+
+# Set environment variables
+export PATH_MODEL=./cased_L-24_H-1024_A-16
+
+# Install required packages
+pip3 install -r requirements.txt

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <link href="{{url_for('static',filename='css/font.css')}}" rel="stylesheet" type="text/css">
+  <link href="{{url_for('static',filename='css/all.css')}}" rel="stylesheet">
+  <link href="{{url_for('static',filename='css/vuetify.min.css')}}" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <style>
+    .v-toolbar__content {
+      padding-left: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <v-app>
+      <v-app-bar app color="blue darken-3" dark>
+        <v-col cols="1">
+	        <v-img
+            height="40"
+	          width="120"
+            src="{{url_for('static',filename='img/Dell_Logo.png')}}"
+          ></v-img>
+        </v-col>
+        <v-col cols="1">
+          <v-toolbar-title class="ml-0 pl-4">
+            <span class="hidden-sm-and-down">Q&A Search</span>
+          </v-toolbar-title>
+        </v-col>
+        <v-col cols="5">
+          <v-text-field v-model="question" v-on:keyup.enter="submit" flat solo-inverted hide-details
+            prepend-inner-icon="search" label="Search" class="hidden-sm-and-down"></v-text-field>
+        </v-col>
+        <v-col cols="1">
+          <v-select hide-details outlined :items="items_strategy" v-model="strategy"
+            label="Strategy"i class="hidden-sm-and-down"></v-select>
+        </v-col>
+        <v-col cols="1">
+          <v-select hide-details outlined :items="items_searchin" v-model="searchin"
+            label="Search in" class="hidden-sm-and-down"></v-select>
+        </v-col>
+        <div class="flex-grow-1"></div>
+      </v-app-bar>
+      <v-main>
+        <v-row class="ml-0">
+          <v-col cols="12" md="6" offset-md="1" offset-lg="1" offset-xl="1">
+            <template v-if="'hits' in result">
+              <v-card max-width="700" flat v-for="(item, index) in result.hits.hits" :key="index">
+                <v-card-title>[[ item._source.title ]]</v-card-title>
+                <v-card-subtitle v-if="score_visible">score [[ item._score ]]</v-card-subtitle>
+                <v-card-text> [[ item._source.text ]]</v-card-text>
+              </v-card>
+            </template>
+          </v-col>
+        </v-row>
+      </v-main>
+    </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    axios.defaults.xsrfCookieName = 'csrftoken';
+    axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+    const base_url = window.location.href;
+    new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+      delimiters: ['[[', ']]'],
+      data: {
+        items_strategy: [
+          { value: "pattern", text: 'Pattern' },
+          { value: 'semantic', text: 'Semantic' }
+        ],
+        items_searchin: [
+          { value: 'question', text: 'Question' },
+          { value: 'answer', text: 'Answer' }
+        ],
+        score_visible: '',
+        strategy: '',
+        searchin: '',
+        question: '',
+        result: {}
+      },
+      created() {
+        this.question = "What's powerscale"
+        this.strategy = 'pattern'
+        this.searchin = 'question'
+        this.score_visible = false
+      },
+      methods: {
+        search() {
+          const params = {
+            question: this.question,
+            strategy: this.strategy,
+            searchin: this.searchin
+          };
+          this.result = {};
+          axios.get(`${base_url}search`, { params }).then(response => {
+            this.result = response.data;
+          });
+          this.score_visible = this.strategy == 'semantic';
+        },
+        submit() {
+          if (this.question == '') {
+            this.result = [];
+            return;
+          }
+          this.search();
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+#! /bin/bash
+
+echo "Creating index ..."
+
+# Create index for pattern search
+python3 script/create_index.py --index_file=data/pattern_index.json \
+  --index_name=pattern
+
+# Create index for semantic search in question
+python3 script/create_index.py --index_file=data/semantic_index.json \
+  --index_name=s_question
+
+# Create index for semantic search in answer
+python3 script/create_index.py --index_file=data/semantic_index.json \
+  --index_name=s_answer
+
+echo "Creating documents ..."
+
+# Create documents for pattern search
+python3 script/create_documents.py --data=data/chatbot-qa-100.csv \
+  --index_name=pattern --save=data/pattern_documents.json
+
+# Create documents for semantic search in question
+python3 script/create_documents.py --data=data/chatbot-qa-100.csv \
+  --index_name=s_question --save=data/semantic_question.json
+
+# Create documents for semantic search in answer
+python3 script/create_documents.py --data=data/chatbot-qa-100.csv \
+  --index_name=s_answer --answer=True --save=data/semantic_answer.json
+
+echo "Indexing documents ..."
+# Index document pattern_documents
+python3 script/index_documents.py --data=data/pattern_documents.json
+
+# Index document semantic_question
+python3 script/index_documents.py --data=data/semantic_question.json
+
+# Index document semantic_answer
+python3 script/index_documents.py --data=data/semantic_answer.json
