@@ -55,3 +55,18 @@ $ ./prepare_data
 ### 4. Open browser
 
 Go to <http://127.0.0.1:5050>.
+
+## Guidance to modification
+
+If you want change the code for yourself, please do(using web service as an example):
+1. Change the source code under web
+2. Delete old web image:
+```bash
+$ docker stop qasearch-web-1
+$ docker container prune --force
+$ docker image rm qasearch_web:latest
+```
+3. Rebuild web image and start all services:
+```bash
+$ docker-compose up -d
+```
