@@ -45,7 +45,7 @@ $ docker-compose up -d
 You can use the create index API to add a new index to an Elasticsearch cluster. Once you created an index, you’re ready to index some document. After converting your data into a JSON, you can add a JSON document to the specified index and make it searchable. So there are three steps:
 
 * Create indexes: We have two different types of index - pattern_index and semantic_index
-* Create documents: We will generate threes documents - pattern_documents, semantic_question and semantic_answer
+* Create documents: We will generate threes documents - pattern_documents, semantic_question and semantic_answer. This will take a long time.
 * Index documents: This will index all three documents above
 
 ```bash
